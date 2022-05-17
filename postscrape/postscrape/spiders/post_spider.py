@@ -5,22 +5,42 @@ import time
 import json
 #import cfscrape
 #from fake_useragent import UserAgent
-
-
+from scrapy.crawler import CrawlerProcess
+from urllib.parse import urlencode
+from urllib.parse import urljoin
 from scrapy import signals
 from pydispatch import dispatcher
+import pandas as pd
+
+df = pd.read_csv('C:/Users/Asus/OneDrive/Desktop/crawler/postscrape/postscrape/spiders/Book1.csv')
+
+item = df['Name'].tolist()
+starturl =[]
+for w1 in item:
+   starturl.append(f'https://www.amazon.in/s?k={w1}')
+print(starturl)
+# w1 = input("Enter your item: ")
 
 
+API = '17a5880c2d8754577f3991c405ad5b5a'
 
+def get_url(url):
+    payload = {'api_key': API, 'url': url}
+    proxy_url = 'http://api.scraperapi.com/?' + urlencode(payload)
+    return proxy_url
 
-w1 = input("Enter your item: ")
-# w2 = input("enter the no of page : ")
 class QuotesSpider(scrapy.Spider):
     name = "amazon"
     # *** Change this url for your prefered search from hemnet.se ***
-    start_urls = [f'https://www.amazon.in/s?k={w1}']
+    start_urls = starturl
+    print(start_urls)
     globalIndex = 0
     results = {}
+
+    def start_requests(self):
+        for url in self.start_urls:
+            yield scrapy.Request(url=get_url(url), dont_filter=True, meta={'start_url': url},callback=self.parse,
+            method="GET")
     
     def parse(self, response):
            
@@ -41,24 +61,40 @@ class QuotesSpider(scrapy.Spider):
 
                 review = ad.css("div.a-spacing-top-micro > div.a-row  > span::attr(aria-label)").get()
 
-                No_of_review = ad.css("div.a-spacing-top-micro > div.a-row  > span::attr(aria-label)")[1].get()
+                No_of_review = ad.css("div.a-spacing-top-micro > div.a-row  > span > a.a-link-normal > span.a-size-base::text").get()
 
                 id = ad.css("div.s-title-instructions-style > h2.a-size-mini > a.a-link-normal::attr(href)").get()
+
+                
                 start = id.find('dp/') +3
                 end = id.find('/ref')
                 id = id[start:end]
-
-                prime_tag = ad.css("div.a-spacing-top-micro > div.a-row  > div.s-align-children-center > span.s-image-logo-view > span.s-prime > i::attr(aria-label)").get()
-                Deal_of_day = ad.css("div.a-spacing-top-micro > div.a-row > a.a-link-normal > span::attr(id)").get()
-                best_seller = ad.css("div.a-spacing-none > div.a-link-normal  >  span.rush-component > div.a-row > span::attr(id)").get()
+                
 
                 if len(id) == 10:
                     sponsered = "False"
                 else :
                     sponsered = "True"
+
+                if len(id) == 10:
+                    id = id
+                else :
+                    starts = id.find('dp%2') + 4
+                    ends = id.find('%2Fref') 
+                    id = id[starts:ends]
+
+                prime_tag = ad.css("div.a-spacing-top-micro > div.a-row  > div.s-align-children-center > span.s-image-logo-view > span.s-prime > i::attr(aria-label)").get()
+                Deal_of_day = ad.css("div.a-spacing-top-micro > div.a-row > a.a-link-normal > span::attr(id)").get()
+                best_seller = ad.css("div.a-spacing-none > div.a-link-normal  >  span.rush-component > div.a-row > span::attr(id)").get()
+
+                
+                
+                start_url = response.meta['start_url']
+                start1 = start_url.find('s?k=') + 4
+                category = start_url[start1:]
                 
                 yield {
-                'Category' : w1 ,
+                'category' : category,
                 'Deal_of_day' : Deal_of_day,
                 'best_seller' : best_seller,   
                 'title': title,
@@ -69,7 +105,8 @@ class QuotesSpider(scrapy.Spider):
                 'No_of_review' : No_of_review,  
                 'id' : id,
                 'sponsered' : sponsered,
-                'prime_tag' : prime_tag 
+                'prime_tag' : prime_tag,
+                'start_url': response.meta['start_url'] ,
                 }
             # next_page = response.css('div.a-section > span.s-pagination-strip >a.s-pagination-next::attr(href)').get() 
             # w2 = w2-1          
