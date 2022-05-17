@@ -16,18 +16,20 @@ df = pd.read_csv('C:/Users/Asus/OneDrive/Desktop/crawler/postscrape/postscrape/s
 
 item = df['Name'].tolist()
 starturl =[]
-for w1 in item:
+
+for w1 in item:                                                     
    starturl.append(f'https://www.amazon.in/s?k={w1}')
 print(starturl)
+
 # w1 = input("Enter your item: ")
+# starturl.append(f'https://www.amazon.in/s?k={w1}')   //  Comment line 20-22 and comment out line 24-25 to get input realtime rather than uploading csv file
 
+# API = '17a5880c2d8754577f3991c405ad5b5a'
 
-API = '17a5880c2d8754577f3991c405ad5b5a'
-
-def get_url(url):
-    payload = {'api_key': API, 'url': url}
-    proxy_url = 'http://api.scraperapi.com/?' + urlencode(payload)
-    return proxy_url
+# def get_url(url):
+#     payload = {'api_key': API, 'url': url}
+#     proxy_url = 'http://api.scraperapi.com/?' + urlencode(payload)    // comment line 46-47 and comment out 29-32 and 44-45 if serval request has to made as it will avoid blockage of spider 
+#     return proxy_url
 
 class QuotesSpider(scrapy.Spider):
     name = "amazon"
@@ -39,7 +41,9 @@ class QuotesSpider(scrapy.Spider):
 
     def start_requests(self):
         for url in self.start_urls:
-            yield scrapy.Request(url=get_url(url), dont_filter=True, meta={'start_url': url},callback=self.parse,
+            # yield scrapy.Request(url=get_url(url), dont_filter=True, meta={'start_url': url},callback=self.parse,
+            # method="GET")
+            yield scrapy.Request(url, dont_filter=True, meta={'start_url': url},callback=self.parse,
             method="GET")
     
     def parse(self, response):
