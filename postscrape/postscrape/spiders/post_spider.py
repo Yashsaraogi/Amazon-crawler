@@ -62,7 +62,7 @@ class QuotesSpider(scrapy.Spider):
                 if original_price != None:
                     original_price = original_price.replace('\u20b9', '')
 
-                description = ad.css("div.s-padding-right-small > div.s-title-instructions-style > h2.a-size-mini > a.a-link-normal > span.a-size-base-plus::text").get()
+                description = ad.css("div.a-spacing-small > div.a-spacing-none > h2.a-size-mini > a.s-underline-link-text > span.a-text-normal::text").get()
                 
 
                 review = ad.css("div.a-spacing-top-micro > div.a-row  > span::attr(aria-label)").get()
