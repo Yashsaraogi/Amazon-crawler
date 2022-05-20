@@ -89,15 +89,15 @@ AUTOTHROTTLE_ENABLED = True
 ## settings.py
 
 ## Add Your ScrapeOps API key
-SCRAPEOPS_API_KEY = 'f38f3203-825f-4312-96a8-cd985790241f'
+# SCRAPEOPS_API_KEY = 'f38f3203-825f-4312-96a8-cd985790241f'
 
-## Add In The ScrapeOps Extension
-EXTENSIONS = {
- 'scrapeops_scrapy.extension.ScrapeOpsMonitor': 500, 
-}
+# ## Add In The ScrapeOps Extension
+# EXTENSIONS = {
+#  'scrapeops_scrapy.extension.ScrapeOpsMonitor': 500, 
+# }
 
-## Update The Download Middlewares
-DOWNLOADER_MIDDLEWARES = { 
-'scrapeops_scrapy.middleware.retry.RetryMiddleware': 550, 
-'scrapy.downloadermiddlewares.retry.RetryMiddleware': None, 
-}
+# ## Update The Download Middlewares
+# DOWNLOADER_MIDDLEWARES = { 
+# 'scrapeops_scrapy.middleware.retry.RetryMiddleware': 550, 
+# 'scrapy.downloadermiddlewares.retry.RetryMiddleware': None, 
+# }

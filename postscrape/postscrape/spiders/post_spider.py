@@ -1,3 +1,4 @@
+from contextlib import nullcontext
 from turtle import title
 import scrapy
 import json
@@ -74,6 +75,9 @@ class QuotesSpider(scrapy.Spider):
                 
                 start = id.find('dp/') +3
                 end = id.find('/ref')
+
+                if description == None :
+                   description = id[1:start - 3]
                 id = id[start:end]
                 
 
@@ -82,12 +86,15 @@ class QuotesSpider(scrapy.Spider):
                 else :
                     sponsered = 1
 
+                
+                
+
                 if len(id) == 10:
                     id = id
                 else :
                     starts = id.find('dp%2') + 4
                     ends = id.find('%2Fref') 
-                    id = id[starts:ends]
+                    id = id[starts+1:ends]
 
                 prime_tag = ad.css("div.a-spacing-top-micro > div.a-row  > div.s-align-children-center > span.s-image-logo-view > span.s-prime > i::attr(aria-label)").get()
 
@@ -105,8 +112,8 @@ class QuotesSpider(scrapy.Spider):
                 
                 yield {
                 'category' : category,
-                'description': description,
-                'title': title,
+                'Brand': title,
+                'title': description,
                 'price': prices,
                 'original-price' : original_price,
                 'review' : review ,
